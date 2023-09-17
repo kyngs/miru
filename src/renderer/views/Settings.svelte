@@ -38,30 +38,12 @@
   window.IPC.on('version', data => (version = data))
   window.IPC.emit('version')
 
-  let wasUpdated = false
-  window.IPC.on('update-available', () => {
-    if (!wasUpdated) {
-      wasUpdated = true
-      toast('Auto Updater', {
-        description: 'A new version of Miru is available. Downloading!'
-      })
-    }
-  })
-  window.IPC.on('update-downloaded', () => {
-    toast.success('Auto Updater', {
-      description: 'A new version of Miru has downloaded. You can restart to update!'
-    })
-  })
-  function checkUpdate () {
-    window.IPC.emit('update')
-  }
-  setInterval(checkUpdate, 1200000)
-
   const changeLog = (async () => {
     const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases')
     const json = await res.json()
     return json.map(({ body, tag_name: version }) => ({ body, version }))
   })()
+  window.IPC.emit('discord_enabled', set.showRPC)
   window.IPC.emit('discord_status', set.showDetailsInRPC)
 </script>
 
@@ -110,6 +92,7 @@
   let settings = set
   $: saveSettings(settings)
   $: window.IPC.emit('discord_status', settings.showDetailsInRPC)
+  $: window.IPC.emit('discord_enabled', settings.showRPC)
   function saveSettings () {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
@@ -185,12 +168,6 @@
         class='btn btn-primary mx-20 mt-10'
         type='button'>
         Export Settings To Clipboard
-      </button>
-      <button
-        use:click={checkUpdate}
-        class='btn btn-primary mx-20 mt-10'
-        type='button'>
-        Check For Updates
       </button>
       <button
         use:click={restoreSettings}
@@ -498,6 +475,14 @@
             data-title='Shows Currently Played Anime And Episode in Discord Rich Presence.'>
             <input type='checkbox' id='rpc-details' bind:checked={settings.showDetailsInRPC} />
             <label for='rpc-details'>Show Details in Discord Rich Presence</label>
+          </div>
+          <div
+            class='custom-switch mb-10 pl-10 font-size-16 w-300'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            data-title='Shows Currently Played Anime And Episode in Discord Rich Presence.'>
+            <input type='checkbox' id='rpc-toggle' bind:checked={settings.showRPC} />
+            <label for='rpc-toggle'>Show The app in Discord Rich Presence</label>
           </div>
         </div>
       </Tab>
