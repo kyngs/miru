@@ -2,7 +2,6 @@
 import { app, BrowserWindow, shell, ipcMain, dialog, MessageChannelMain } from 'electron'
 import path from 'path'
 import Discord from './discord.js'
-import Updater from './updater.js'
 import Protocol from './protocol.js'
 import { development } from './util.js'
 
@@ -43,7 +42,6 @@ function createWindow () {
   })
   new Discord(mainWindow)
   new Protocol(mainWindow)
-  new Updater(mainWindow)
   mainWindow.setMenuBarVisibility(false)
 
   mainWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, fn) => {
