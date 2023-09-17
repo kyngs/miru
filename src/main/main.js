@@ -2,7 +2,6 @@
 import { app, BrowserWindow, shell, ipcMain, dialog, MessageChannelMain } from 'electron'
 import path from 'path'
 import Discord from './discord.js'
-import Updater from './updater.js'
 import Protocol from './protocol.js'
 import { development } from './util.js'
 
@@ -43,7 +42,6 @@ function createWindow () {
   })
   new Discord(mainWindow)
   new Protocol(mainWindow)
-  new Updater(mainWindow)
   mainWindow.setMenuBarVisibility(false)
 
   mainWindow.webContents.session.webRequest.onHeadersReceived({ urls: ['https://sneedex.moe/api/public/nyaa', atob('aHR0cDovL2FuaW1ldG9zaG8ub3JnL3N0b3JhZ2UvdG9ycmVudC8q'), atob('aHR0cHM6Ly9ueWFhLnNpLyo=')] }, ({ responseHeaders }, fn) => {

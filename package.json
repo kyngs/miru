@@ -30,7 +30,6 @@
     "electron": "25.1.0",
     "electron-builder": "^24.6.3",
     "electron-log": "^4.4.8",
-    "electron-updater": "^6.1.1",
     "eslint": "^8.48.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-svelte": "^2.33.0",
