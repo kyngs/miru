@@ -34,18 +34,5 @@
     top: 0;
     -webkit-app-region: no-drag
   }
-  .close {
-    width: 40px;
-  }
-  .close:hover {
-    background-color: #e81123 !important;
-  }
-  svg {
-    width: 18px;
-    height: 18px;
-    width: 100%;
-  }
-  path {
-    fill: currentColor;
-  }
+
 </style>
