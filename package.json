@@ -1,6 +1,6 @@
 {
   "name": "kyngs_miru_fork",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "kyngs <kyngs@users.noreply.github.com>; ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
@@ -91,7 +91,7 @@
     ],
     "afterSign": "./buildResources/notarize.js",
     "appId": "com.github.kyngs.miru",
-    "productName": "Miru",
+    "productName": "miru-kyngs",
     "files": [
       "build/**/*",
       "!node_modules/**/*.{mk,a,o,h}"
