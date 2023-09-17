@@ -82,6 +82,13 @@
         "miru"
       ]
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "kyngs",
+        "repo": "miru"
+      }
+    ],
     "afterSign": "./buildResources/notarize.js",
     "appId": "com.github.kyngs.miru",
     "productName": "Miru",
