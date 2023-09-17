@@ -1,30 +1,35 @@
-import { Client } from 'discord-rpc'
-import { ipcMain } from 'electron'
+import {Client} from 'discord-rpc'
+import {ipcMain} from 'electron'
 
 export default class {
   window
   status
   discord
-  requestedDiscordDetails
+  requestedAllowDiscordDetails
   allowDiscordDetails
+  requestedAllowRPC
+  allowRPC
   rpcStarted
   cachedPresence
 
   /**
    * @param {import('electron').BrowserWindow} window
    */
-  constructor (window) {
+  constructor(window) {
     this.window = window
-    this.discord = new Client({
-      transport: 'ipc'
-    })
+    this.allowRPC = false;
+
     ipcMain.on('discord_status', (event, data) => {
-      this.requestedDiscordDetails = data
+      this.requestedAllowDiscordDetails = data
       if (!this.rpcStarted) {
         this.handleRPC()
         setInterval(this.handleRPC.bind(this), 5000) // According to Discord documentation, clients can only update their presence 5 times per 20 seconds. We will add an extra second to be safe.
         this.rpcStarted = true
       }
+    })
+
+    ipcMain.on('discord_enabled', (event, enable) => {
+      this.requestedAllowRPC = enable
     })
 
     ipcMain.on('discord', (event, data) => {
@@ -33,9 +38,23 @@ export default class {
         this.setDiscordRPC(data)
       }
     })
+  }
+
+  async disableRPC() {
+    if (this.discord) {
+      await this.discord.destroy()
+      this.discord = null
+    }
+  }
+
+  async loginRPC() {
+    await this.disableRPC()
+
+    this.discord = new Client({
+      transport: 'ipc'
+    })
 
     this.discord.on('ready', async () => {
-      this.setDiscordRPC(this.status)
       this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
       this.discord.subscribe('ACTIVITY_JOIN')
       this.discord.subscribe('ACTIVITY_SPECTATE')
@@ -44,16 +63,12 @@ export default class {
       this.window.webContents.send('w2glink', secret)
     })
 
-    this.loginRPC()
-  }
-
-  loginRPC () {
-    this.discord.login({ clientId: '954855428355915797' }).catch(() => {
+    await this.discord.login({clientId: '954855428355915797'}).catch(() => {
       setTimeout(this.loginRPC.bind(this), 5000).unref()
     })
   }
 
-  setDiscordRPC (data = {
+  setDiscordRPC(data = {
     activity: {
       timestamps: {
         start: Date.now()
@@ -75,18 +90,25 @@ export default class {
     }
   }) {
     this.status = data
-    if (this.discord.user && this.status) {
+    if (this.discord && this.discord.user && this.status) {
       this.status.pid = process.pid
       this.discord.request('SET_ACTIVITY', this.status)
     }
   }
 
-  handleRPC () {
-    if (this.allowDiscordDetails === this.requestedDiscordDetails) return
+  async handleRPC() {
+    if (this.allowRPC !== this.requestedAllowRPC) {
+      this.allowRPC = this.requestedAllowRPC
+      if (this.allowRPC) {
+        await this.loginRPC()
+      } else {
+        await this.disableRPC()
+      }
+    }
 
-    this.allowDiscordDetails = this.requestedDiscordDetails
+    this.allowDiscordDetails = this.requestedAllowDiscordDetails
     if (!this.allowDiscordDetails) {
-      this.setDiscordRPC(null)
+      this.setDiscordRPC()
     } else if (this.cachedPresence) {
       this.setDiscordRPC(this.cachedPresence)
     }

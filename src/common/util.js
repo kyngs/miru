@@ -20,6 +20,7 @@ export const defaults = {
   disableSubtitleBlur: false,
   toshoURL: decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')),
   showDetailsInRPC: true,
+  showRPC: true,
   smoothScroll: true,
   cards: 'small',
   expandingSidebar: true,
