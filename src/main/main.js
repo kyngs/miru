@@ -23,7 +23,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
-    frame: process.platform === 'darwin', // Only keep the native frame on Mac
+    frame: process.platform !== "win32", // Only hide the native frame on windows
     titleBarStyle: 'hidden',
     titleBarOverlay: {
       color: '#17191c',
