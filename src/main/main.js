@@ -13,7 +13,7 @@ let webtorrentWindow
 function createWindow () {
   // Create the browser window.
   webtorrentWindow = new BrowserWindow({
-    show: false,
+    show: development,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -44,8 +44,9 @@ function createWindow () {
   new Protocol(mainWindow)
   mainWindow.setMenuBarVisibility(false)
 
-  mainWindow.webContents.session.webRequest.onHeadersReceived({ urls: ['https://sneedex.moe/api/public/nyaa', atob('aHR0cDovL2FuaW1ldG9zaG8ub3JnL3N0b3JhZ2UvdG9ycmVudC8q'), atob('aHR0cHM6Ly9ueWFhLnNpLyo=')] }, ({ responseHeaders }, fn) => {
-    responseHeaders['Access-Control-Allow-Origin'] = ['*']
+  mainWindow.webContents.session.webRequest.onHeadersReceived(({ responseHeaders }, fn) => {
+    delete responseHeaders['Access-Control-Allow-Origin']
+    responseHeaders['access-control-allow-origin'] = ['*']
     fn({ responseHeaders })
   })
 
@@ -57,15 +58,23 @@ function createWindow () {
     mainWindow.webContents.openDevTools()
   }
 
+  ipcMain.on('devtools', () => {
+    webtorrentWindow.webContents.openDevTools()
+  })
+
   mainWindow.on('closed', () => {
     mainWindow = null
-    webtorrentWindow.webContents.postMessage('destroy', null)
+    try {
+      webtorrentWindow.webContents.postMessage('destroy', null)
+    } catch (e) {}
     app.quit()
   })
 
   ipcMain.on('close', () => {
     mainWindow = null
-    webtorrentWindow.webContents.postMessage('destroy', null)
+    try {
+      webtorrentWindow.webContents.postMessage('destroy', null)
+    } catch (e) {}
     app.quit()
   })
 

@@ -80,7 +80,7 @@
       <button class='close pointer z-30 bg-dark top-20 right-0 position-fixed' type='button' use:click={close}> &times; </button>
       <img class='w-full cover-img banner position-absolute' alt='banner' src={media.bannerImage || ' '} />
       <div class='row'>
-        <div class='col-7'>
+        <div class='col-7 pb-10'>
           <div class='d-flex flex-row align-items-end pb-20 mb-15'>
             <div class='cover d-flex flex-row align-items-end'>
               <img class='rounded cover-img w-full overflow-hidden' alt='cover-art' src={media.coverImage?.extraLarge || media.coverImage?.medium} />
@@ -170,7 +170,7 @@
           </ToggleList>
         </div>
         <div class='col-5 d-flex flex-column pl-20'>
-          <EpisodeList id={media.id} userProgress={media.mediaListEntry && media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress} episodeCount={getMediaMaxEp(media)} duration={media.duration} {play} />
+          <EpisodeList {media} userProgress={media.mediaListEntry && media.mediaListEntry.status === 'CURRENT' && media.mediaListEntry.progress} episodeCount={getMediaMaxEp(media)} {play} />
         </div>
       </div>
     </div>

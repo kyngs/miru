@@ -1,21 +1,28 @@
 import { app, ipcMain, shell, dialog } from 'electron'
+import store from './store.js'
 
 export const development = process.env.NODE_ENV?.trim() === 'development'
 
 const flags = [
+  ['disable-gpu-sandbox'],
+  ['disable-direct-composition-video-overlays'],
+  ['double-buffer-compositing'],
   ['enable-gpu-rasterization'],
   ['enable-zero-copy'],
   ['ignore-gpu-blocklist'],
   ['enable-hardware-overlays', 'single-fullscreen,single-on-top,underlay'],
-  ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,BackForwardCache:TimeToLiveInBackForwardCacheInSeconds/300/should_ignore_blocklists/true/enable_same_site/true,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilationEnableDrDc,CanvasOopRasterization,BackForwardCache:TimeToLiveInBackForwardCacheInSeconds/300/should_ignore_blocklists/true/enable_same_site/true,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
+  ['enable-features', 'PlatformEncryptedDolbyVision,EnableDrDc,CanvasOopRasterization,ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,UseSkiaRenderer,WebAssemblyLazyCompilation'],
   ['force_high_performance_gpu'],
-  ['disable-features', 'Vulkan'],
+  ['disable-features', 'Vulkan,CalculateNativeWinOcclusion,WidgetLayering'],
   ['disable-color-correct-rendering'],
+  ['autoplay-policy', 'no-user-gesture-required'], ['disable-notifications'], ['disable-logging'], ['disable-permissions-api'], ['no-sandbox'], ['no-zygote'],
   ['force-color-profile', 'srgb']
 ]
 for (const [flag, value] of flags) {
   app.commandLine.appendSwitch(flag, value)
 }
+
+app.commandLine.appendSwitch('use-angle', store.get('angle') || 'default')
 
 if (!app.requestSingleInstanceLock()) app.quit()
 
@@ -28,6 +35,10 @@ ipcMain.on('doh', (event, dns) => {
     secureDnsMode: 'secure',
     secureDnsServers: [dns]
   })
+})
+
+ipcMain.on('angle', (e, data) => {
+  store.set('angle', data)
 })
 
 ipcMain.on('close', () => {

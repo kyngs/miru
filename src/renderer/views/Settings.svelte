@@ -4,7 +4,13 @@
   import { defaults } from '@/../common/util.js'
   export let alToken = localStorage.getItem('ALtoken') || null
 
-  export const set = { ...defaults, ...(JSON.parse(localStorage.getItem('settings')) || {}) }
+  let storedSettings = { ...defaults }
+
+  try {
+    storedSettings = JSON.parse(localStorage.getItem('settings'))
+  } catch (e) {}
+
+  export const set = { ...defaults, ...storedSettings }
   if (set.enableDoH) window.IPC.emit('doh', set.doHURL)
   window.addEventListener('paste', ({ clipboardData }) => {
     if (clipboardData.items?.[0]) {
@@ -37,6 +43,9 @@
   let version = '1.0.0'
   window.IPC.on('version', data => (version = data))
   window.IPC.emit('version')
+  function updateAngle () {
+    window.IPC.emit('angle', set.angle)
+  }
 
   const changeLog = (async () => {
     const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases')
@@ -93,7 +102,7 @@
   $: saveSettings(settings)
   $: window.IPC.emit('discord_status', settings.showDetailsInRPC)
   $: window.IPC.emit('discord_enabled', settings.showRPC)
-  function saveSettings () {
+  function saveSettings (settings) {
     localStorage.setItem('settings', JSON.stringify(settings))
   }
   function restoreSettings () {
@@ -274,6 +283,7 @@
               <option value='dut'>Dutch</option>
               <option value='nor'>Norwegian</option>
               <option value='rum'>Romanian</option>
+              <option value='rus'>Russian</option>
               <option value='slo'>Slovak</option>
               <option value='swe'>Swedish</option>
               <option value='ara'>Arabic</option>
@@ -302,6 +312,7 @@
               <option value='dut'>Dutch</option>
               <option value='nor'>Norwegian</option>
               <option value='rum'>Romanian</option>
+              <option value='rus'>Russian</option>
               <option value='slo'>Slovak</option>
               <option value='swe'>Swedish</option>
               <option value='ara'>Arabic</option>
@@ -510,6 +521,22 @@
             data-title='CSS Variables Used For Custom Themes'>
             <label for='css-variables'>CSS Variables</label>
             <textarea class='form-control' id='css-variables' placeholder='--accent-color: #e5204c;' bind:value={$variables} />
+          </div>
+          <div class='input-group mb-10 w-400 form-control-lg' data-toggle='tooltip' data-placement='top' data-title="What ANGLE Backend To Use. DON'T CHANGE WITHOUT REASON! On Some Windows Machines D3D9 Might Help With Flicker.">
+            <div class='input-group-prepend'>
+              <span class='input-group-text w-200 justify-content-center'>ANGLE Backend</span>
+            </div>
+            <select class='form-control form-control-lg' bind:value={settings.angle} on:change={updateAngle}>
+              <option value='default' selected>Default</option>
+              <option value='d3d9'>D3D9</option>
+              <option value='d3d11'>D3D11</option>
+              <option value='warp'>Warp [Software D3D11]</option>
+              <option value='gl'>GL</option>
+              <option value='gles'>GLES</option>
+              <option value='swiftshader'>SwiftShader</option>
+              <option value='vulkan'>Vulkan</option>
+              <option value='metal'>Metal</option>
+            </select>
           </div>
         </div>
       </Tab>
