@@ -1,6 +1,6 @@
 {
   "name": "kyngs_miru_fork",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": "kyngs <kyngs@users.noreply.github.com>; ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
