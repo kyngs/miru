@@ -167,6 +167,7 @@ export const defaults = {
   doHURL: 'https://cloudflare-dns.com/dns-query',
   disableSubtitleBlur: false,
   toshoURL: decodeURIComponent(atob('aHR0cHM6Ly9mZWVkLmFuaW1ldG9zaG8ub3JnLw==')),
+  showRPC: true,
   showDetailsInRPC: true,
   smoothScroll: true,
   cards: 'small',

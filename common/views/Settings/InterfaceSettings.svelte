@@ -19,6 +19,12 @@
       <label for='rpc-details'>{settings.showDetailsInRPC ? 'On' : 'Off'}</label>
     </div>
   </SettingCard>
+  <SettingCard title="Enable Discord Rich Presence" description='Enables Discord rich presence.'>
+    <div class='custom-switch'>
+      <input type='checkbox' id='rpc' bind:checked={settings.showRPC} />
+      <label for='rpc'>{settings.showRPC ? 'On' : 'Off'}</label>
+    </div>
+  </SettingCard>
 {/if}
 
 <h4 class='mb-10 font-weight-bold'>Interface Settings</h4>

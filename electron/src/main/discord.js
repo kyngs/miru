@@ -25,28 +25,41 @@ export default class {
 
   discord
   allowDiscordDetails
+  allowDiscord
   cachedPresence
 
   /**
    * @param {import('electron').BrowserWindow} window
    */
   constructor (window) {
-    this.discord = new Client({
-      transport: 'ipc'
-    })
-
     ipcMain.on('show-discord-status', (event, data) => {
       this.allowDiscordDetails = data
       this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)
     })
+
+    ipcMain.on('show-discord', async (event, data) => {
+      console.log('show-discord', data)
+      this.allowDiscord = data
+      this.debouncedDiscordRPC(this.allowDiscord ? this.cachedPresence : undefined)
+    });
 
     ipcMain.on('discord', (event, data) => {
       this.cachedPresence = data
       this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)
     })
 
+    this.debouncedDiscordRPC = debounce(async status => await this.setDiscordRPC(status), 4500)
+    this.allowDiscord = false;
+  }
+
+  async loginRPC () {
+    if (this.discord) return
+    this.discord = new Client({
+      transport: 'ipc'
+    })
+
     this.discord.on('ready', async () => {
-      this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
+      await this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
       this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
       this.discord.subscribe('ACTIVITY_JOIN')
       this.discord.subscribe('ACTIVITY_SPECTATE')
@@ -56,18 +69,26 @@ export default class {
       window.webContents.send('w2glink', secret)
     })
 
-    this.loginRPC()
-
-    this.debouncedDiscordRPC = debounce(status => this.setDiscordRPC(status), 4500)
-  }
-
-  loginRPC () {
-    this.discord.login({ clientId: '954855428355915797' }).catch(() => {
+    await this.discord.login({ clientId: '954855428355915797' }).catch(() => {
       setTimeout(() => this.loginRPC(), 5000).unref()
     })
   }
 
-  setDiscordRPC (data = this.defaultStatus) {
+  async disableRPC () {
+    if (this.discord) {
+      await this.discord.destroy()
+      this.discord = null
+    }
+  }
+
+  async setDiscordRPC (data = this.defaultStatus) {
+    if (this.allowDiscord) {
+      await this.loginRPC()
+    } else {
+      await this.disableRPC()
+      return
+    }
+
     if (this.discord.user && data) {
       data.pid = process.pid
       this.discord.request('SET_ACTIVITY', data)

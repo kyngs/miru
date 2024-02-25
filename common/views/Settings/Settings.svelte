@@ -96,6 +96,7 @@
   onDestroy(() => {
     IPC.off('path', pathListener)
   })
+  $: IPC.emit('show-discord', $settings.showRPC)
   $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
   IPC.on('path', pathListener)
 </script>
