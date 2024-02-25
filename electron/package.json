@@ -1,8 +1,8 @@
 {
-  "name": "Miru",
-  "version": "4.5.11",
+  "name": "kyngs_miru_fork",
+  "version": "1.3.0",
   "private": true,
-  "author": "ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
+  "author": "kyngs <kyngs@users.noreply.github.com>; ThaUnknown_ <ThaUnknown@users.noreply.github.com>",
   "description": "Stream anime torrents, real-time with no waiting for downloads.",
   "main": "build/main.js",
   "homepage": "https://github.com/ThaUnknown/miru#readme",
@@ -55,13 +55,13 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "ThaUnknown",
+        "owner": "kyngs",
         "repo": "miru"
       }
     ],
     "afterSign": "./buildResources/notarize.js",
-    "appId": "com.github.thaunknown.miru",
-    "productName": "Miru",
+    "appId": "com.github.kyngs.miru",
+    "productName": "miru-kyngs",
     "files": [
       "build/**/*",
       "!node_modules/**/*.{mk,a,o,h}"
@@ -87,7 +87,7 @@
       "category": "AudioVideo;Video",
       "description": "Bittorrent streaming software for cats",
       "desktop": {
-        "Name": "Miru",
+        "Name": "kyngs' Miru",
         "Comment": "Bittorrent streaming software for cats",
         "Keywords": "anime",
         "Type": "Application",

@@ -38,7 +38,6 @@ export default class {
     })
 
     ipcMain.on('show-discord', async (event, data) => {
-      console.log('show-discord', data)
       this.allowDiscord = data
       this.debouncedDiscordRPC(this.allowDiscord ? this.cachedPresence : undefined)
     });
